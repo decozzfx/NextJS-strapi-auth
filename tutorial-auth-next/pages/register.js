@@ -1,5 +1,23 @@
 import Link from "next/link"
 import { useState } from "react"
+import nookies from 'nookies'
+
+export async function getServerSideProps(ctx){
+	const cookies = nookies.get(ctx)
+	
+	if(cookies.token){
+		return {
+			redirect : {
+				destination : '/dashboard'
+			}
+		}
+	}
+
+	return {
+		props : {}
+	}
+}
+
 
 export default function Register(){
 

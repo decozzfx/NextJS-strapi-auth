@@ -1,5 +1,23 @@
 import Link from 'next/link'
 import React, { useState } from 'react'
+import nookies from 'nookies'
+import Router from 'next/router'
+
+export async function getServerSideProps(ctx){
+	const cookies = nookies.get(ctx)
+	
+	if(cookies.token){
+		return {
+			redirect : {
+				destination : '/dashboard'
+			}
+		}
+	}
+
+	return {
+		props : {}
+	}
+}
 
 export default function login(){
 	const [field, setField] = useState({})
@@ -32,10 +50,13 @@ export default function login(){
 			console.info(res)
 
 		if(res.jwt){
-			console.info('ok')
+			nookies.set(null, 'token', res.jwt) // parsing jwt token to cookie
+
 			setSuccess(true)
 			setProgress(false)
+			setTimeout(() => Router.replace('/dashboard'),2000)
 		}
+		setProgress(false)
 	}
 
 	 return (
@@ -45,7 +66,7 @@ export default function login(){
 		<div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
 			<div className="flex flex-col bg-white shadow-md px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-3xl w-50 max-w-md">
 			{success && (
-			<div className='w-full mb-2 bg-green-500 text-sm text-center text-white font-semibold rounded-lg py-2 px-3'>
+			<div className='w-full mb-2 bg-green-500 shadow-md text-sm text-center text-white font-semibold rounded-lg py-2 px-3'>
 				Login is Success
 			</div>
 			)}
@@ -89,7 +110,7 @@ export default function login(){
 						</button>
 					</div>
 					<div className="py-1 mt-5 flex w-full text-center justify-center items-center border-2 rounded-xl shadow-md">
-						<a href="" className="text-gray-600 text-sm ">Login with Github</a>
+						<a href={`${process.env.NEXT_PUBLIC_URL}/api/connect/github`} className="text-gray-600 text-sm ">Login with Github</a>
 					</div>
 				</form>
 				</div>
