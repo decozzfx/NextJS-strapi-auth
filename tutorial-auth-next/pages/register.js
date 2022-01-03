@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { useState } from "react"
 
 export default function Register(){
@@ -5,92 +6,67 @@ export default function Register(){
    const [username, setUsername] = useState('')
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')
+   const [progress, setProgress] = useState(false)
+   const [success, setSuccess] = useState(false)
 
    async function doRegister(e){
       e.preventDefault()
+      setProgress(true)
       const body = {username, email, password}
-      console.log(body)
       
       const req = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/auth/local/register`,{
-         method : "POST",
-         headers : {
-           'Content-Type' : 'application/json'
-          },
-          body : JSON.stringify(body)
+        method : "POST",
+        headers : {
+          'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify(body)
       })
       const res = await req.json()
-      console.log(res)
-   }
+
+      if(res.jwt){
+        setProgress(false)
+        setSuccess(true)
+        e.target.reset()
+      }
+
+      }
 
    return(
+     <div>
+     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossOrigin="anonymous" />
+     <title>Register</title>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-         <div className="
-         flex flex-col
-         bg-white
-         shadow-md
-         px-4
-         sm:px-6
-         md:px-8
-         lg:px-10
-         py-8
-         rounded-3xl
-         w-50
-         max-w-md
-      ">
+         <div className="flex flex-col bg-white shadow-md px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-3xl w-50 max-w-md">
+      {success && (
+        <div className="bg-green-400 text-white mb-5 py-2 px-3 rounded-md shadow-md text-center">
+          Your account has been registered
+        </div>
+      )}
      <div className="font-medium self-center text-xl sm:text-3xl text-gray-800">
-      Join us Now
+      Join us Now!
      </div>
      <div className="mt-4 self-center text-xl sm:text-sm text-gray-800">
       Enter your credentials to get access account
      </div>
      <div className="mt-10">
-      <form onSubmit={doRegister}>
+     {progress && (<div className="absolute inset-0 z-10 bg-white/50" />)}
+      <form onSubmit={doRegister} className="relative">
         <div className="flex flex-col mb-5">
          <label htmlFor="email" className="mb-1 text-xs tracking-wide text-gray-600">Username:</label>
          <div className="relative">
-           <div className="
-           inline-flex
-           items-center
-           justify-center
-           absolute
-           left-0
-           top-0
-           h-full
-           w-10
-           text-gray-400
-         ">
+           <div className="inline-flex items-center justify-center absolute left-0 top-0 h-full w-10 text-gray-400">
             <i className="fas fa-user text-blue-500" />
            </div>
-           <input type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} className="
-           text-sm
-           placeholder-gray-500
-           pl-10
-           pr-4
-           rounded-2xl
-           border border-gray-400
-           w-full
-           py-2
-           focus:outline-none focus:border-blue-400
-         " placeholder="Enter your username"  />
+           <input type="text" name="username" onChange={(e) => setUsername(e.target.value)} className="text-sm placeholder-gray-500 pl-10 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-blue-400" placeholder="Enter your username"  />
          </div>
         </div>
         <div className="flex flex-col mb-5">
          <label htmlFor="email" className="mb-1 text-xs tracking-wide text-gray-600">E-Mail Address:</label>
          <div className="relative">
-           <div className="
-           inline-flex
-           items-center
-           justify-center
-           absolute
-           left-0
-           top-0
-           h-full
-           w-10
-           text-gray-400
-         ">
+           <div className="inline-flex items-center justify-center absolute left-0 top-0 h-full w-10 text-gray-400">
             <i className="fas fa-at text-blue-500" />
            </div>
-           <input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="
+           <input type="text" name="email" onChange={(e) => setEmail(e.target.value)} className="
            text-sm
            placeholder-gray-500
            pl-10
@@ -121,7 +97,7 @@ export default function Register(){
               <i className="fas fa-lock text-blue-500" />
             </span>
            </div>
-           <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} className="
+           <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} className="
            text-sm
            placeholder-gray-500
            pl-10
@@ -135,7 +111,7 @@ export default function Register(){
          </div>
         </div>
         <div className="flex w-full">
-         <button type="submit" className="
+         <button disabled={progress} type="submit" className="
          flex
          mt-2
          items-center
@@ -161,10 +137,11 @@ export default function Register(){
          </button>
         </div>
       </form>
+      
      </div>
    </div>
    <div className="flex justify-center items-center mt-6">
-     <a href="#" target="_blank" className="
+     <a className="
      inline-flex
      items-center
      text-gray-700
@@ -172,9 +149,12 @@ export default function Register(){
      text-xs text-center
    ">
       <span className="ml-2">You have an account?
-      </span></a><a href="#" className="text-xs ml-2 text-blue-500 font-semibold">Login here</a>
+      </span></a>
+      <Link href='/login'>
+      <a className="text-xs ml-2 text-blue-500 font-semibold">Login here</a>
+      </Link>
    </div>
   </div>
-
+</div>
    )
 }
